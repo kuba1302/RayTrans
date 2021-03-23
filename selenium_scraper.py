@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 
 class CoList:
     def __init__(self):
-        self.path = r"C:\Users\Admin\Desktop\chromedriver.exe"
+        self.path = "/usr/bin/chromedriver"
         self.driver.get('https://www.colist.eu/searchbygroup.php?lang=en&land_id=16&&group_id=15560&&org_group_id=0,15084,15560,&&records=10&')
         self.options = webdriver.ChromeOptions()
         self.options.headless = True
@@ -67,7 +67,7 @@ class CoList:
 
 class EuroPages:
     def __init__(self):
-        self.path = r"C:\Users\Admin\Desktop\chromedriver.exe"
+        self.path = "/usr/bin/chromedriver"
         self.driver = webdriver.Chrome(self.path)
 
     def wait(self):
@@ -125,7 +125,7 @@ class EuroPages:
         print(company_info)
         return company_info
 
-    animal_data = pd.DataFrame(columns=['Company Name', 'number', 'website', 'country', 'address'])
+    data = pd.DataFrame(columns=['Company Name', 'number', 'website', 'country', 'address'])
 
     def next_company(self, i):
         try:
@@ -135,7 +135,7 @@ class EuroPages:
             self.wait()
             self.click_phone()
             print(i)
-            self.animal_data.loc[len(self.animal_data.index)] = self.get_info()
+            self.data.loc[len(self.data.index)] = self.get_info()
             self.driver.back()
         except:
             try:
@@ -145,26 +145,46 @@ class EuroPages:
                 self.wait()
                 self.click_phone()
                 print(i)
-                self.animal_data.loc[len(self.animal_data.index)] = self.get_info()
+                self.data.loc[len(self.data.index)] = self.get_info()
                 self.driver.back()
             except:
                 print('error')
 
-    def animal_production(self):
-        website = 'https://www.europages.co.uk/companies/results.html?ih=02740P&ih=02740Q&ih=02745R&ih=02700I&ih=02740G&ih=02701G&ih=02900D&ih=02745A&ih=02740J&ih=02745E&ih=02740R&ih=02740O&ih=' \
-                  '02740K&ih=02740C&ih=02740I&ih=02740A&ih=02701B&ih=02664B&ih=02703A&ih=02700A&ih=02745P&ih=02740N&ih=02700H&ih=02700B&ih=02740M&ih=02740F&ih=02664A&ih=02701A&ih=02703B&ih=02740H&ih=02740E'
-        self.driver.get(website)
-        for url_i in range(1, 278):
+    def scraping(self, start_page, end_page, file_name, new_file = True):
+        # Create empty csv file
+        if new_file:
+            self.data.to_csv('{}.csv'.format(file_name), index=False)
+
+        for url_i in range(start_page, end_page):
+            # Reset DataFrame at the begining of every iteration
+            self.data = pd.DataFrame(columns=['Company Name', 'number', 'website', 'country', 'address'])
+
             self.wait()
-            self.driver.get('https://www.europages.co.uk/companies/pg-{}/results.html?ih=02700B;02900D;02664A;02'
-                            '745A;02701G;02740O;02700A;02740Q;02703A;02701B;02740E;02740I;02745R;02664B;02700H;02740A;02701A;02740N;02740'
-                            'F;02703B;02740H;02700I;02745E;02740C;02740K;02740R;02740M;02740G;02745P;02740P;02740J'.format(url_i))
+            self.driver.get('https://www.europages.co.uk/companies/pg-{}/results.html?ih=04662B;04620H;04661C;04615K;0'
+                            '4670D;04670A;04665L;04663A;04663K;04674A;04661D;04663D;04615G;04615A;04620A;04661A;04663'
+                            'H;04615H;04661E;04663F;04662A;04665N;04672A;04663I;04615E;04677A;04620F;04620B;04663B;0'
+                            '4663C;04670E;04615F;04665B;04615D;04630A;05626I;04620L;04665O;04630B;04660F;04665A;0466'
+                            '3J;04620G;04665J;04620I;04665C;05620M;04630C;04615B;04620J;04672B;04660H;04620K'.format(url_i))
+
+            print('Scraping {} page'.format(url_i))
+
             for i in range(1, 34):
                 self.next_company(i)
 
-        self.animal_data.to_csv('drinks_all_countries.csv', index=False)
+            if url_i % 2 == 0:
+                self.data.to_csv('{}.csv'.format(file_name), mode= 'a', index=False, header=False)
+
         self.driver.close()
+
+    def search_on_dnb(self, name):
+        self.driver.get('https://www.dnb.com/')
+        self.driver.find_element_by_xpath('/html/body/div[1]/header/div[3]/div/div/div[2]/div[1]/button').click()
+        self.driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/div/div/div/div[2]/input')\
+            .send_keys(name)
+        self.driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/div/div/div/div[2]/button').click()
+
 b = EuroPages()
-b.animal_production()
+b.scraping(621, 1749, 'tools_hardware', new_file=False)
+
 
 
