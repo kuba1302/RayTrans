@@ -5,6 +5,7 @@ pd.set_option('display.width', desired_width)
 from time import sleep
 import random
 from selenium.webdriver.chrome.options import Options
+from multiprocessing import Process
 
 class CoList:
     def __init__(self):
@@ -160,11 +161,12 @@ class EuroPages:
             self.data = pd.DataFrame(columns=['Company Name', 'number', 'website', 'country', 'address'])
 
             self.wait()
-            self.driver.get('https://www.europages.co.uk/companies/pg-{}/results.html?ih=04662B;04620H;04661C;04615K;0'
-                            '4670D;04670A;04665L;04663A;04663K;04674A;04661D;04663D;04615G;04615A;04620A;04661A;04663'
-                            'H;04615H;04661E;04663F;04662A;04665N;04672A;04663I;04615E;04677A;04620F;04620B;04663B;0'
-                            '4663C;04670E;04615F;04665B;04615D;04630A;05626I;04620L;04665O;04630B;04660F;04665A;0466'
-                            '3J;04620G;04665J;04620I;04665C;05620M;04630C;04615B;04620J;04672B;04660H;04620K'.format(url_i))
+            self.driver.get('https://www.europages.co.uk/companies/pg-{}/results.html?ih=04596B;04557F;04559A;0455'
+                            '9B;04560;04557C;04557L;04559O;04559D;04593I;04600E;04596A;04600M;04600F;04557A;04565G'
+                            ';04565T;04562A;04557B;04690B;04565C;04565B;04565H;04557E;04600B;04565K;04565W;04596F'
+                            ';04562B;04559C;04593D;04565E;04596D;04565A;04600I;04565M;04557G;04559L;04557D;04565O'
+                            ';04559I;04559K;04557I;04600J;04593A;04690A;04593H;04559E;04596H;05611;04600C;04557K;'
+                            '04600A;04596E;04565Q;04565V;04593E;04596C'.format(url_i))
 
             print('Scraping {} page'.format(url_i))
 
@@ -176,6 +178,11 @@ class EuroPages:
 
         self.driver.close()
 
+    def scraping_multiple_pages(self, ):
+        pass
+
+
+
     def search_on_dnb(self, name):
         self.driver.get('https://www.dnb.com/')
         self.driver.find_element_by_xpath('/html/body/div[1]/header/div[3]/div/div/div[2]/div[1]/button').click()
@@ -184,7 +191,8 @@ class EuroPages:
         self.driver.find_element_by_xpath('/html/body/div[1]/div[2]/div[2]/div/div/div/div/div[2]/button').click()
 
 b = EuroPages()
-b.scraping(621, 1749, 'tools_hardware', new_file=False)
+b.scraping(1282, 1400, 'steel_metal_transformation', new_file=False)
+
 
 
 
